@@ -2,7 +2,6 @@ package HelperClasses;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,33 +43,30 @@ public class FileReader {
     }
 
     /**
-     * Parses the input line to retrieve first node in sequence
-     * @return the integer value of the node
+     * Parses the input line of song data to retrieve all 15 song
+     * parameters in the following order:
+     * Song, Name, Artist, Featured Artists, Release Date, Genre,
+     * Popularity, Danceability, Energy, Loudness, Speechiness,
+     * Acousticness, Liveness, Tempo, Valence, and Duration (ms)
+     *
+     * @return a set of strings containing the parameters
      */
-    public void getParameter(String line) {
-        String lineRegex = "^\\W?([A-zÀ-ÿ\\s\\d'$/&()!:%@#]+)" +
-                "\\W?[,]\\W?([A-zÀ-ÿ\\s,!\\d'$/()-]+)\\W?[,]\\W?([\\sA-zÀ-ÿ\\d,-]*)" +
-                "\\W?[,](\\d+)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)" +
-                "[,](.*)[,](.*)[,](.*)";
+    public ArrayList<String> getParameter(String line) {
+        ArrayList<String> parameters = new ArrayList<>();
+        String lineRegex = "^\\W?([A-zÀ-ÿ\\s\\d'$/&()!:%@#.&-]+)\\W?[,]" +
+                "\\W?([A-zÀ-ÿ\\s,!\\d'$/()-]+)\\W?[,]\\W?([\\sA-zÀ-ÿ-\\d,$']*)" +
+                "\\W?[,](\\d+)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,](.*)[,]" +
+                "(.*)[,](.*)[,](.*)[,](.*)";
         Matcher lineMatcher = Pattern.compile(lineRegex).matcher(line);
         if (lineMatcher.find()) {
             for (int i = 1; i <= lineMatcher.groupCount(); i++) {
-                System.out.println(lineMatcher.group(i));
+                parameters.add(lineMatcher.group(i).toLowerCase());
             }
-            System.out.println();
         } else {
             System.out.println("This song: " + line + " could not be found.");
         }
+        return parameters;
     }
 
-    /**
-     * Parses the input line to retrieve second node in sequence
-     * @return the integer value of the node
-     */
-    public int getSecondNode(String line) {
-        Scanner s = new Scanner(line).useDelimiter(" ");
-        int first = s.nextInt();
-        return s.nextInt();
-    }
 }
 
