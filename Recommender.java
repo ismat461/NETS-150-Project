@@ -58,5 +58,31 @@ public class Recommender {
         return initial10Songs;
     }
 
-    public
+    //genre for a single song
+    private String getGenre(String songName) {
+       ArrayList<String> parameters = this.songMap.get(songName);
+       // the genre is the third index of the parameters array
+
+        return parameters.get(3);
+    }
+
+    private double calculateInterval() {
+        // create a set of all the songs with the genre
+
+        return 1.1;
+    }
+
+
+    public void createParameterHashMap(ArrayList<String> twoSongNames) {
+        String song1 = twoSongNames.get(0);
+        String song2 = twoSongNames.get(1);
+
+        //System.out.println(getGenre(song1));
+
+        // Process for song 1; get the genre and calculate the avg and standard deviation of all the
+        // parameters for all songs of the genre
+
+    }
+
+
 }

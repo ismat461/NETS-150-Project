@@ -7,11 +7,15 @@ import java.util.*;
 
 public class MainTest {
     static ArrayList<String> initial10Songs;
+    static ArrayList<String> twoSongNames = new ArrayList<>();
 
     public static void main(String[] args) {
         Recommender recommender = new Recommender(createNameMap());
         initial10Songs = recommender.randomizeSongs();
         interactiveTerminal();
+        // testing get genre
+        recommender.createParameterHashMap(twoSongNames);
+
 
 
 
@@ -70,6 +74,9 @@ public class MainTest {
                 System.out.println("You Entered [ " + songInput1 + " ] " + "and " + "[ " + songInput2 + " ]. Your Recommendation Will Be Provided Shortly. " );
             }
         } while (invalidSong);
+
+        twoSongNames.add(songInput1);
+        twoSongNames.add(songInput2);
     }
 }
 
