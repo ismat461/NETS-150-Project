@@ -11,12 +11,9 @@ public class MainTest {
 
     public static void main(String[] args) {
         Recommender recommender = new Recommender(createNameMap());
-        initial10Songs = recommender.randomizeSongs();
+        initial10Songs = recommender.getInitSongs();
         interactiveTerminal();
-        // testing get genre
-        recommender.createParameterHashMap(twoSongNames);
-
-
+        recommender.getRecommendation(twoSongNames);
     }
 
     public static Map<String, ArrayList<String>> createNameMap(){
@@ -36,9 +33,7 @@ public class MainTest {
             String songName = parameters.get(0);
             parameters.remove(0);
             songMap.put(songName, parameters);
-//            System.out.println(songMap.get(songName));
         }
-//        System.out.println(songMap.keySet());
         return songMap;
     }
 
@@ -51,7 +46,7 @@ public class MainTest {
     public static void interactiveTerminal() {
         System.out.println();
         System.out.println("Please Enter Two Songs You'd Like to Listen to in the " +
-                "the Next Two Lines in the Same Way it is Provided Above. Only the Song Name is Needed.");
+                "Next Two Lines in the Same Way it is Provided Above. Only the Song Name is Needed.");
 
         Scanner sc = new Scanner(System.in); // creates a scanner to read in inputs
         String songInput1 = sc.nextLine();
@@ -66,12 +61,15 @@ public class MainTest {
                 songInput2 = sc.nextLine();
             } else {
                 invalidSong = false;
-                System.out.println("You Entered [ " + songInput1 + " ] " + "and " + "[ " + songInput2 + " ]. Your Recommendation Will Be Provided Shortly. " );
+                System.out.println("You Entered [ " + songInput1 + " ] " + "and " + "[ " + songInput2 + " ]. " +
+                        "Your Recommendation Will Be Provided Shortly. " );
+                System.out.println();
             }
         } while (invalidSong);
 
         twoSongNames.add(songInput1);
         twoSongNames.add(songInput2);
+        System.out.println();
     }
 }
 

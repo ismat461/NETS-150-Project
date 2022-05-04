@@ -13,25 +13,57 @@ public class Recommender {
     private final int THRESHOLD = 8;
 
 
-    /*
-     * Constructor that initializes the base map
+    /**
+     * Constructor that initializes the base map of songs
      */
     public Recommender(Map<String, ArrayList<String>> songMap) {
         this.songMap = songMap;
     }
 
-    /**
+
+    /*
      * METHODS
      */
 
-    public ArrayList<String> initial10Songs() {
-        ArrayList<String> initialTenSongs = new ArrayList<>();
-        Object[] songs = songMap.keySet().toArray();
+    /**
+     * Randomly chooses 10 songs from an input list of songs
+     *
+     * @param songs
+     * @return list of 10 songs
+     */
+    public ArrayList<String> get10Songs(ArrayList<String> songs) {
+        ArrayList<String> tenSongs = new ArrayList<>();
         Random randomInts = new Random();
+        int currInt = randomInts.nextInt(songs.size() - 1);
+        int count = 10;
+        while (count > 0)  {
+            tenSongs.add(songs.get(currInt));
+            int nextInt = randomInts.nextInt(songs.size() - 1);
+            do {
+                if (currInt != nextInt) {
+                    currInt = nextInt;
+                    count -= 1;
+                } else {
+                    nextInt = randomInts.nextInt(songs.size() - 1);
+                }
+            } while (currInt == nextInt);
+        }
+        return tenSongs;
+    }
+
+    /**
+     * Randomly chooses 10 songs from the songMap
+     *
+     * @return list of 10 songs
+     */
+    public ArrayList<String> getInitSongs() {
+        ArrayList<String> tenSongs = new ArrayList<>();
+        Random randomInts = new Random();
+        Object[] songs = songMap.keySet().toArray();
         int currInt = randomInts.nextInt(songMap.size() - 1);
         int count = 10;
         while (count > 0)  {
-            initialTenSongs.add((String) songs[currInt]);
+            tenSongs.add((String) songs[currInt]);
             int nextInt = randomInts.nextInt(songMap.size() - 1);
             do {
                 if (currInt != nextInt) {
@@ -42,9 +74,19 @@ public class Recommender {
                 }
             } while (currInt == nextInt);
         }
-        return initialTenSongs;
+        System.out.println("Here is Your List of 10 Songs: " + tenSongs);
+        System.out.println("Here is the List of the Corresponding Artists: " +
+                this.getArtists(tenSongs));
+
+        return tenSongs;
     }
 
+    /**
+     * Returns a list of the artists of the input songs
+     *
+     * @param list of names of songs
+     * @return list of artists of the songs given
+     */
     public ArrayList<String> getArtists(ArrayList<String> songNames) {
         ArrayList<String> artists = new ArrayList<>();
         for (String s : songNames) {
@@ -53,27 +95,19 @@ public class Recommender {
         return artists;
     }
 
-    public ArrayList<String> randomizeSongs() {
-        /*
-         * Randomly chooses 10 songs from the list
-         */
-        ArrayList<String> initial10Songs = this.initial10Songs();
-        System.out.println("Here is Your List of 10 Songs: " + initial10Songs);
-        System.out.println("Here is the List of the Corresponding Artists: " +
-                                                    this.getArtists(initial10Songs));
-        return initial10Songs;
-    }
-
-    //genre for a single song
+    /**
+     *  Finds and returns genre for a single song
+     * @param a song's name
+     * @return the song's genre
+     */
     private String getGenre(String songName) {
-       ArrayList<String> parameters = this.songMap.get(songName);
-       // the genre is the third index of the parameters array
-        return parameters.get(3);
+        ArrayList<String> parameters = this.songMap.get(songName);
+        // the genre is the third index of the parameters array
+        return parameters.get(GENREINDEX);
     }
 
     private double calculateMean(ArrayList<String> songsInGenre, int indexOfParem) {
         double sumParameter = 0.0;
-        for (int i = 0; i < songsInGenre.size(); i++) {
             for (String songName: songsInGenre) {
                 ArrayList<String> parametersOfSong = songMap.get(songName);
                 sumParameter += Double.parseDouble(parametersOfSong.get(indexOfParem));
@@ -86,16 +120,15 @@ public class Recommender {
         double sum = 0;
         double squareOfDistFromMean = 0;
         double stDev = 0;
-        for (int i = 0; i < songsInGenre.size(); i++) {
-            for (String songName : songsInGenre) {
-                ArrayList<String> parametersOfSong = songMap.get(songName);
-                squareOfDistFromMean += Math.pow(Double.parseDouble(parametersOfSong.get(indexOfParam)) - mean, 2);
-                sum += squareOfDistFromMean;
-            }
+        for (String songName : songsInGenre) {
+            ArrayList<String> parametersOfSong = songMap.get(songName);
+            squareOfDistFromMean = Math.pow(Double.parseDouble(parametersOfSong.get(indexOfParam)) - mean, 2);
+            sum += squareOfDistFromMean;
         }
         stDev = Math.sqrt(sum / songsInGenre.size());
         return stDev;
     }
+
     private double[][] calculateTolerance(String genre) {
         ArrayList<String> songsInGenre = new ArrayList<>();
         double[][] toleranceArray = new double[AVGANDSTDEVROWSIZE][AVGANDSTDEVCOLSIZE];
@@ -247,9 +280,6 @@ public class Recommender {
         String song1 = twoSongNames.get(0);
         String song2 = twoSongNames.get(1);
 
-        System.out.println("this is song 1's genre: " + getGenre(song1));
-        System.out.println("this is song 2's genre: " + getGenre(song2));
-
         double[][] toleranceForSong1Genre = calculateTolerance(getGenre(song1));
         Map<String, ArrayList<Integer>> booleanMapForSong1 = parameterMapHelper(toleranceForSong1Genre, song1);
         Map<String, ArrayList<Integer>> booleanMapForSong2 = parameterMapHelper(toleranceForSong1Genre, song2);
@@ -277,7 +307,7 @@ public class Recommender {
      * HELPER FUNCTIONS
      */
 
-    }
+}
 
 
 
