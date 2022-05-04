@@ -7,11 +7,14 @@ import java.util.*;
 public class Recommender {
     // TESTTING TESTING? IS IT UPDATED????
     private Map<String, ArrayList<String>> songMap;
+    private final int avgAndStdevRowSize = 10;
+    private final int avgAndStdevColSize = 2;
+    private final int genreIndexInMap = 3;
+
 
     /*
      * Constructor that initializes the base map
      */
-
     public Recommender(Map<String, ArrayList<String>> songMap) {
         this.songMap = songMap;
     }
@@ -72,8 +75,12 @@ public class Recommender {
         for (int i = 0; i < songsInGenre.size(); i++) {
             for (String songName: songsInGenre) {
                 ArrayList<String> parametersOfSong = songMap.get(songName);
-                sumParameter += parametersOfSong.get(indexOfParem);
+                sumParameter += Double.parseDouble(parametersOfSong.get(indexOfParem));
             }
+//            if (i == 0) {
+//                System.out.println("this is pop edm sum: " + sumParameter);
+//                System.out.println("this is pop edm avg: " + (sumParameter);
+//            }
         }
         sumParameter /= songsInGenre.size();
 //        return sumParameter / songsInGenre.size();
@@ -88,7 +95,7 @@ public class Recommender {
         for (int i = 0; i < songsInGenre.size(); i++) {
             for (String songName : songsInGenre) {
                 ArrayList<String> parametersOfSong = songMap.get(songName);
-                squareOfDistFromMean += Math.pow(Double.parseDouble(parametersOfSong.get(indexOfParam), 2) - mean);
+                squareOfDistFromMean += Math.pow(Double.parseDouble(parametersOfSong.get(indexOfParam)) - mean, 2);
                 sum += squareOfDistFromMean;
             }
         }
@@ -104,34 +111,65 @@ public class Recommender {
         int numberOfSongs = 0;
 
         // create a set of all the songs with the genre
-        for (Map.Entry<String, ArrayList<String>> songName : songMap.entrySet()) {
-            String songGenre = songMap.get(songName).get(genreIndexInMap);
+        for (String songName : songMap.keySet()) {
+            String songGenre = getGenre(songName);
             if (songGenre.equals(genre)) {
                 songsInGenre.add(String.valueOf(songName));
             }
         }
 
-        double mean = 0.0;
-        double stDev = 0.0;
         // iterate through the songsInGenre list to add the parameters of each song
-        for (int i = 0; i < avgAndStdevRowSize; i++) {
+        for (int i = 4; i < 14; i++) {
             mean = calculateMean(songsInGenre, i);
             stDev = calculateStandardDev(songsInGenre, mean, i);
-            toleranceArray[i][0] = mean;
-            toleranceArray[i][1] = stDev;
+            toleranceArray[row][0] = mean;
+            toleranceArray[row][1] = stDev;
+            row++;
         }
         return toleranceArray;
     }
 
+    /**
+     *
+     */
+    public int compareString(String s1, String s2) {
+        if (s1.equals(s2)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
+
+    /**
+     * Desription: Boolean Hashmap
+     * @param twoSongNames
+     * Process for both songs: get the genre of the song, calculate
+     * the tolerance of each respective parameter, and then
+     */
     public void createParameterHashMap(ArrayList<String> twoSongNames) {
         String song1 = twoSongNames.get(0);
         String song2 = twoSongNames.get(1);
 
-        //System.out.println(getGenre(song1));
+        System.out.println("this is song 1's genre: " + getGenre(song1));
+        System.out.println("this is song 2's genre: " + getGenre(song2));
 
-        // Process for song 1; get the genre and calculate the avg and standard deviation of all the
-        // parameters for all songs of the genre
+        double[][] toleranceForSong1Genre = calculateTolerance(getGenre(song1));
+//        double[][] toleranceForSong2Genre = calculateTolerance(getGenre(song2));
+
+//        for (int i = 0; i < toleranceForSong2Genre.length; i++) {
+//            System.out.println(toleranceForSong2Genre[i][0]);
+//            System.out.println(toleranceForSong2Genre[i][1]);
+//        }
+//
+
+//          System.out.println(Array.deeptoString(toleranceForSong1Genre));
+        //print the array, each line will have the mean and std
+        System.out.println(Arrays.deepToString(toleranceForSong1Genre).replace("], ", "]\n"));
+
+
+
+        }
 
     }
 
