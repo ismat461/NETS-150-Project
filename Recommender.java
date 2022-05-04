@@ -5,11 +5,12 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class Recommender {
-    // TESTTING TESTING? IS IT UPDATED????
     private Map<String, ArrayList<String>> songMap;
-    private final int avgAndStdevRowSize = 10;
-    private final int avgAndStdevColSize = 2;
-    private final int genreIndexInMap = 3;
+    private final int AVGANDSTDEVROWSIZE = 10;
+    private final int AVGANDSTDEVCOLSIZE = 2;
+    private final int GENREINDEX = 3;
+    private final int BOOLEANARRAYLENGTH = 14;
+    private final int THRESHOLD = 8;
 
 
     /*
@@ -77,15 +78,8 @@ public class Recommender {
                 ArrayList<String> parametersOfSong = songMap.get(songName);
                 sumParameter += Double.parseDouble(parametersOfSong.get(indexOfParem));
             }
-//            if (i == 0) {
-//                System.out.println("this is pop edm sum: " + sumParameter);
-//                System.out.println("this is pop edm avg: " + (sumParameter);
-//            }
-        }
         sumParameter /= songsInGenre.size();
-//        return sumParameter / songsInGenre.size();
         return sumParameter;
-
     }
 
     private double calculateStandardDev(ArrayList<String> songsInGenre, double mean, int indexOfParam) {
@@ -104,7 +98,7 @@ public class Recommender {
     }
     private double[][] calculateTolerance(String genre) {
         ArrayList<String> songsInGenre = new ArrayList<>();
-        double[][] toleranceArray = new double[avgAndStdevRowSize][avgAndStdevColSize];
+        double[][] toleranceArray = new double[AVGANDSTDEVROWSIZE][AVGANDSTDEVCOLSIZE];
         double mean = 0.0;
         double stDev = 0.0;
         int row = 0;
@@ -132,22 +126,124 @@ public class Recommender {
     /**
      *
      */
-    public int compareString(String s1, String s2) {
-        if (s1.equals(s2)) {
+    public int compareStrings(ArrayList<String> song1Parameters, String parameter, int index) {
+        if (song1Parameters.get(index).equals(parameter)) {
             return 1;
         } else {
             return 0;
         }
     }
 
+    public int compareQuantities(double[][] tolerances, String parameter, int index) {
+        double paramAsDouble = Double.parseDouble(parameter);
+        double meanMinusStDev = tolerances[index][0] - tolerances[index][1];
+        double meanPlusStDev = tolerances[index][0] + tolerances[index][1];
+        if (paramAsDouble >= meanMinusStDev && paramAsDouble <= meanPlusStDev) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    // iterate through the parameter hashmap of every song,
+    // and find the songs that exceed the threshold of similarity
+    public ArrayList<String> songFit(Map<String, ArrayList<Integer>> parameterMap) {
+        Set<String> songNames = parameterMap.keySet();
+        ArrayList<String> recommendedSongs = new ArrayList<>();
+        ArrayList<Integer> songParameterBooleanList = new ArrayList<>();
+        int count = 0;
+
+        for (String songName: songNames) {
+            songParameterBooleanList = parameterMap.get(songName);
+            for (int i = 0; i < 14; i++) {
+                if (songParameterBooleanList.get(i) == 1) {
+                    count++;
+                }
+            }
+            if (count >= THRESHOLD) {
+                String songRec = songName + " by " + songMap.get(songName).get(0) + ". " +
+                        "the artists featured: "  + songMap.get(songName).get(1) +
+                        ". release date: " + songMap.get(songName).get(2)
+                        + ". genre of song: " + songMap.get(songName).get(3) + ".";
+                recommendedSongs.add(songRec);
+//                System.out.println(songRec);
+            }
+            count = 0;
+        }
+        return recommendedSongs;
+    }
+
+    /**
+     *
+     * @param songFit1
+     * @param songFit2
+     * @return
+     */
+    public ArrayList<String> getIntersectionOfFits(ArrayList<String> songFit1, ArrayList<String> songFit2) {
+        ArrayList<String> songsInIntersection = new ArrayList<>();
+        if (songFit1.size() <= songFit2.size()) {
+            for (String song : songFit1) {
+                if (songFit2.contains(song)) {
+                    songsInIntersection.add(song);
+                }
+            }
+        } else {
+            for (String songName : songFit2) {
+                if (songFit1.contains(songName)) {
+                    songsInIntersection.add(songName);
+                }
+            }
+        }
+
+        return songsInIntersection;
+    }
+
+    private Map<String, ArrayList<Integer>> parameterMapHelper(double[][] tolerances, String inputSong) {
+        Map<String, ArrayList<Integer>> booleanMap = new HashMap<>();
+        ArrayList<String> inputSongParameters = songMap.get(inputSong);
+        Set<String> songNames = songMap.keySet();
+        int withinRange = 0;
+        int indexOfCurrParam = 0;
+
+        // iterating through all of the songs in the songMap
+        for (String songName : songNames) {
+            // skip the song name, so we don't compare a song to itself
+            if (!songName.equals(inputSong)) {
+                ArrayList<String> parameters = songMap.get(songName);
+                for (String currParam : parameters) {
+                    // if we are evaluating a string parameter, determine if the strings are the same
+                    if (parameters.indexOf(currParam) <= 3) {
+                        indexOfCurrParam = parameters.indexOf(currParam);
+                        withinRange = compareStrings(inputSongParameters, currParam, indexOfCurrParam);
+                        // we are checking that the second song we're comparing to, isn't already
+                        // a key in the boolean hashmap
+                        if (!booleanMap.containsKey(songName)) {
+                            // add the song to the array list
+                            ArrayList<Integer> booleanArray = new ArrayList<>();
+                            booleanArray.add(withinRange);
+                            booleanMap.put(songName, booleanArray);
+                        } else {
+                            booleanMap.get(songName).add(withinRange);
+                        }
+                    } else {
+                        indexOfCurrParam = parameters.indexOf(currParam) - 4;
+                        withinRange = compareQuantities(tolerances, currParam, indexOfCurrParam);
+                        booleanMap.get(songName).add(withinRange);
+                    }
+                }
+            }
+        }
+        return booleanMap;
+    }
 
     /**
      * Desription: Boolean Hashmap
      * @param twoSongNames
      * Process for both songs: get the genre of the song, calculate
-     * the tolerance of each respective parameter, and then
+     * the tolerance of each respective parameter, and then find the
+     * songs that are within the tolerance range
      */
-    public void createParameterHashMap(ArrayList<String> twoSongNames) {
+    public void getRecommendation(ArrayList<String> twoSongNames) {
         String song1 = twoSongNames.get(0);
         String song2 = twoSongNames.get(1);
 
@@ -155,21 +251,31 @@ public class Recommender {
         System.out.println("this is song 2's genre: " + getGenre(song2));
 
         double[][] toleranceForSong1Genre = calculateTolerance(getGenre(song1));
-//        double[][] toleranceForSong2Genre = calculateTolerance(getGenre(song2));
+        Map<String, ArrayList<Integer>> booleanMapForSong1 = parameterMapHelper(toleranceForSong1Genre, song1);
+        Map<String, ArrayList<Integer>> booleanMapForSong2 = parameterMapHelper(toleranceForSong1Genre, song2);
 
-//        for (int i = 0; i < toleranceForSong2Genre.length; i++) {
-//            System.out.println(toleranceForSong2Genre[i][0]);
-//            System.out.println(toleranceForSong2Genre[i][1]);
-//        }
-//
-
-//          System.out.println(Array.deeptoString(toleranceForSong1Genre));
-        //print the array, each line will have the mean and std
-        System.out.println(Arrays.deepToString(toleranceForSong1Genre).replace("], ", "]\n"));
+        // find the songs that are similar to user selected song 1 and 2 respectively
+        ArrayList<String> songsThatFit1 = songFit(booleanMapForSong1);
+        ArrayList<String> songsThatFit2 = songFit(booleanMapForSong2);
 
 
-
+        ArrayList<String> songsInIntersection = get10Songs(getIntersectionOfFits(songsThatFit1, songsThatFit2));
+        if (songsInIntersection != null) {
+            for (String song : songsInIntersection) {
+                System.out.println(song);
+            }
+        } else {
+            songsInIntersection.addAll(songsThatFit1);
+            songsInIntersection.addAll(songsThatFit2);
+            for (String song : get10Songs(songsInIntersection)) {
+                System.out.println(song);
+            }
         }
+    }
+
+    /**
+     * HELPER FUNCTIONS
+     */
 
     }
 
