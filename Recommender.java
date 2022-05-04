@@ -74,7 +74,10 @@ public class Recommender {
                 sumParameter += parametersOfSong.get(indexOfParem);
             }
         }
-        return sumParameter / songsInGenre.size();
+        sumParameter /= songsInGenre.size();
+//        return sumParameter / songsInGenre.size();
+        return sumParameter;
+
     }
 
     private double calculateStandardDev(ArrayList<String> songsInGenre, double mean, int indexOfParam) {
@@ -93,8 +96,12 @@ public class Recommender {
     }
     private double[][] calculateTolerance(String genre) {
         ArrayList<String> songsInGenre = new ArrayList<>();
-        Array[][] double toleranceArray = new [avgAndStdevRowSize][avgAndStdevColSize];
+        double[][] toleranceArray = new double[avgAndStdevRowSize][avgAndStdevColSize];
+        double mean = 0.0;
+        double stDev = 0.0;
+        int row = 0;
         int numberOfSongs = 0;
+
         // create a set of all the songs with the genre
         for (Map.Entry<String, ArrayList<String>> songName : songMap.entrySet()) {
             String songGenre = songMap.get(songName).get(genreIndexInMap);
@@ -128,4 +135,4 @@ public class Recommender {
     }
 
 
-}
+

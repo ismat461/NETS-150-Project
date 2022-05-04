@@ -17,11 +17,6 @@ public class MainTest {
         recommender.createParameterHashMap(twoSongNames);
 
 
-
-
-        /*
-         * The program will begin its recommendation system.
-         */
     }
 
     public static Map<String, ArrayList<String>> createNameMap(){
