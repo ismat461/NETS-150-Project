@@ -1,6 +1,7 @@
 package HelperClasses;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Recommender {
@@ -62,14 +63,56 @@ public class Recommender {
     private String getGenre(String songName) {
        ArrayList<String> parameters = this.songMap.get(songName);
        // the genre is the third index of the parameters array
-
         return parameters.get(3);
     }
 
-    private double calculateInterval() {
-        // create a set of all the songs with the genre
+    private double calculateMean(ArrayList<String> songsInGenre, int indexOfParem) {
+        double sumParameter = 0.0;
+        for (int i = 0; i < songsInGenre.size(); i++) {
+            for (String songName: songsInGenre) {
+                ArrayList<String> parametersOfSong = songMap.get(songName);
+                sumParameter += parametersOfSong.get(indexOfParem);
+            }
+        }
+        return sumParameter / songsInGenre.size();
+    }
 
-        return 1.1;
+    private double calculateStandardDev(ArrayList<String> songsInGenre, double mean, int indexOfParam) {
+        double sum = 0;
+        double squareOfDistFromMean = 0;
+        double stDev = 0;
+        for (int i = 0; i < songsInGenre.size(); i++) {
+            for (String songName : songsInGenre) {
+                ArrayList<String> parametersOfSong = songMap.get(songName);
+                squareOfDistFromMean += Math.pow(Double.parseDouble(parametersOfSong.get(indexOfParam), 2) - mean);
+                sum += squareOfDistFromMean;
+            }
+        }
+        stDev = Math.sqrt(sum / songsInGenre.size());
+        return stDev;
+    }
+    private double[][] calculateTolerance(String genre) {
+        ArrayList<String> songsInGenre = new ArrayList<>();
+        Array[][] double toleranceArray = new [avgAndStdevRowSize][avgAndStdevColSize];
+        int numberOfSongs = 0;
+        // create a set of all the songs with the genre
+        for (Map.Entry<String, ArrayList<String>> songName : songMap.entrySet()) {
+            String songGenre = songMap.get(songName).get(genreIndexInMap);
+            if (songGenre.equals(genre)) {
+                songsInGenre.add(String.valueOf(songName));
+            }
+        }
+
+        double mean = 0.0;
+        double stDev = 0.0;
+        // iterate through the songsInGenre list to add the parameters of each song
+        for (int i = 0; i < avgAndStdevRowSize; i++) {
+            mean = calculateMean(songsInGenre, i);
+            stDev = calculateStandardDev(songsInGenre, mean, i);
+            toleranceArray[i][0] = mean;
+            toleranceArray[i][1] = stDev;
+        }
+        return toleranceArray;
     }
 
 
