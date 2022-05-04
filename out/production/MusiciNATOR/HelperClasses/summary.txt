@@ -6,7 +6,7 @@ TA: David Feng
 **************************/
 Description of Project
 *************************/
-Our project was Implementation based. We implemented a recommendation system through
+Our project was implementation based. We implemented a recommendation system through
 via an interactive terminal. We merged two datasets of songs and their respective audio
 features* (which in our code we often refer to as "parameters") and then reduced the size
 of the set to a map of 3991 songs. (Disclaimer: Some songs do contain swear words).
@@ -60,9 +60,23 @@ Step 3. 10 recommended songs that are similar to both songs the user inputted,
 Work Breakdown
 *************************/
 Ismat
+- Added the featured artists column into the data set
+- Added a second song input to the interactive terminal
+- Both figured out method of storing and processing all the songs' parameters (Integer Hashmap)
+- We both worked on the how to compare all the song's parameters and store them in a
+  usable data structure, integer hashmap.
+- We both processed the parameters with numbers.
+- Interpreted integer hashmap to create a song fit arraylist of songs to return to the user in STC.
+- Refactored code
 
 Anuoluwa
-
+- Used Regex to capture data from lines read from data.txt and cleaned the song data
+  (removed "with" and other extraneous information from data)
+- Created the randomizer and the interactive terminal where the user picks one of the 10 songs
+- Both figured out method of storing and processing all the songs' parameters (String -> ArrayList<Integer> Hashmap)
+- Worked on method comparing the string parameters and comparing the number parameters.
+- Created functions for the STC concept (closure of songs in song1 and song2's with song 1 and song 2) set of songs
+- Debugged code
 
 ****************************/
 Links to Outside Resources

@@ -1,22 +1,20 @@
 package HelperClasses;
 
-
 import java.io.*;
 import java.util.*;
-
 
 public class MainTest {
     static ArrayList<String> initial10Songs;
     static ArrayList<String> twoSongNames = new ArrayList<>();
 
     public static void main(String[] args) {
-        Recommender recommender = new Recommender(createNameMap());
+        Recommender recommender = new Recommender(createSongNameToAudioFeatureMap());
         initial10Songs = recommender.getInitSongs();
         interactiveTerminal();
         recommender.getRecommendation(twoSongNames);
     }
 
-    public static Map<String, ArrayList<String>> createNameMap(){
+    public static Map<String, ArrayList<String>> createSongNameToAudioFeatureMap(){
         // Reading in the data from the txt file
         FileReader fr = new FileReader("data.txt");
         List<String> lines = new LinkedList<>();
@@ -46,7 +44,8 @@ public class MainTest {
     public static void interactiveTerminal() {
         System.out.println();
         System.out.println("Please Enter Two Songs You'd Like to Listen to in the " +
-                "Next Two Lines in the Same Way it is Provided Above. Only the Song Name is Needed.");
+                "Next Two Lines in the Same Way it is Provided Above. Only the " +
+                "Song Name is Needed.");
 
         Scanner sc = new Scanner(System.in); // creates a scanner to read in inputs
         String songInput1 = sc.nextLine();
@@ -56,7 +55,8 @@ public class MainTest {
 
         do {
             if (!initial10Songs.contains(songInput1) || !initial10Songs.contains(songInput2)) {
-                System.out.println("You Entered a Song Which Was Not One of the Listed Songs. Please Try Again.");
+                System.out.println("You Entered a Song Which Was Not One of the Listed Songs. " +
+                        "Please Try Again.");
                 songInput1 = sc.nextLine();
                 songInput2 = sc.nextLine();
             } else {
