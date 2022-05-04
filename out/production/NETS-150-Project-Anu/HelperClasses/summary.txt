@@ -1,0 +1,67 @@
+********************************************/
+Name of Project: MusiciNATOR
+Authors: Ismat Agwedicham & Anuoluwa Akibu
+TA: David Feng
+
+**************************/
+Description of Project
+*************************/
+Our project was Implementation based. We implemented a recommendation system through
+via an interactive terminal. We merged two datasets of songs and their respective audio
+features* (which in our code we often refer to as "parameters") and then reduced the size
+of the set to a map of 3991 songs. (Disclaimer: Some songs do contain swear words).
+During a run of the interactive terminal, 10 songs are randomly chosen to be given to the
+user who is prompted to pick 2 songs they like. These two songs are then compared to all the
+other songs in the map for similarities based on audio features.
+
+Then our code searches for songs found in at least 5 or more ranges (avg +- std) of the parameters. A song
+in 5+ ranges (i.e. fits within the target range of the user-selected song's audio features) is deemed similar
+to the input song. This results in two groups: songs similar to the first and second user-selected songs
+respectively. Our code will then return both:
+1) the intersection of songs in these groups
+2) the union of the songs in these groups
+--------------------------------------------------------------------
+Definitions:
+*Audio Features (Qualitative and Quantitative): Artist, Featured Artists, Release Date, Genre, Popularity,
+Danceability, Energy, Loudness, Speechiness, Acousticness, Liveness, Tempo, Valence, Duration (ms)
+
+**************************/
+Categories Used
+*************************/
+1. Recommendation
+In order to find similarities between parameters, we used the genres of the user-selected
+songs as the base group for aggregating the data. Since genres are characterized by possessing
+certain audio features, we decided that grouping songs by data and then finding target ranges of
+the audio features for each genre associated with each genre with averages and standard deviation.
+
+For example, say the genre of a selected song was rock, for the quantitative parameters we would:
+1) average all the songs in the genre's data associated with the parameter
+2) find a standard deviation of this data
+
+This was to form a target range of each parameter. Given this associated target range for each parameter
+of songs in the rock genre, we would then look for songs that satisfy this range. This is done across all
+parameters for both of the user's selected songs.
+
+********************************/
+Captions for the Photos
+*******************************/
+
+
+**************************/
+Work Breakdown
+*************************/
+Ismat
+
+Anuoluwa
+
+
+****************************/
+Links to Outside Resources
+****************************/
+The data we used:
+1. https://www.kaggle.com/datasets/leonardopena/top-spotify-songs-from-20102019-by-year
+2. https://www.kaggle.com/datasets/imuhammad/audio-features-and-lyrics-of-spotify-songs
+
+The sources of outside research we did:
+1. https://www.therecordindustry.io/analyzing-spotify-audio-features/
+2. https://www.kaylinpavlik.com/classifying-songs-genres/

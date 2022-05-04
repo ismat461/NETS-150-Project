@@ -95,16 +95,6 @@ public class Recommender {
         return artists;
     }
 
-    /**
-     *  Finds and returns genre for a single song
-     * @param a song's name
-     * @return the song's genre
-     */
-    private String getGenre(String songName) {
-        ArrayList<String> parameters = this.songMap.get(songName);
-        // the genre is the third index of the parameters array
-        return parameters.get(GENREINDEX);
-    }
 
     private double calculateMean(ArrayList<String> songsInGenre, int indexOfParem) {
         double sumParameter = 0.0;
@@ -159,7 +149,7 @@ public class Recommender {
     /**
      *
      */
-    public int compareStrings(ArrayList<String> song1Parameters, String parameter, int index) {
+    private int compareStrings(ArrayList<String> song1Parameters, String parameter, int index) {
         if (song1Parameters.get(index).equals(parameter)) {
             return 1;
         } else {
@@ -167,7 +157,7 @@ public class Recommender {
         }
     }
 
-    public int compareQuantities(double[][] tolerances, String parameter, int index) {
+    private int compareQuantities(double[][] tolerances, String parameter, int index) {
         double paramAsDouble = Double.parseDouble(parameter);
         double meanMinusStDev = tolerances[index][0] - tolerances[index][1];
         double meanPlusStDev = tolerances[index][0] + tolerances[index][1];
@@ -180,7 +170,7 @@ public class Recommender {
 
     // iterate through the parameter hashmap of every song,
     // and find the songs that exceed the threshold of similarity
-    public ArrayList<String> songFit(Map<String, ArrayList<Integer>> parameterMap) {
+    private ArrayList<String> songFit(Map<String, ArrayList<Integer>> parameterMap) {
         Set<String> songNames = parameterMap.keySet();
         ArrayList<String> recommendedSongs = new ArrayList<>();
         ArrayList<Integer> songParameterBooleanList = new ArrayList<>();
@@ -307,6 +297,16 @@ public class Recommender {
      * HELPER FUNCTIONS
      */
 
+    /**
+     * Finds and returns genre for a single song
+     * @param a song's name
+     * @return the song's genre
+     */
+    private String getGenre(String songName) {
+        ArrayList<String> parameters = this.songMap.get(songName);
+        // the genre is the third index of the parameters array
+        return parameters.get(GENREINDEX);
+    }
 }
 
 
