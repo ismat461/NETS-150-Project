@@ -1,14 +1,27 @@
-package Recommendations;
-import HelperClasses.FileReader;
+package HelperClasses;
+
 
 import java.io.*;
 import java.util.*;
 
 
 public class MainTest {
+    static ArrayList<String> initial10Songs;
+    static ArrayList<String> twoSongNames = new ArrayList<>();
+
     public static void main(String[] args) {
+        Recommender recommender = new Recommender(createNameMap());
+        initial10Songs = recommender.randomizeSongs();
+        interactiveTerminal();
+        // testing get genre
+        recommender.createParameterHashMap(twoSongNames);
+
+
+    }
+
+    public static Map<String, ArrayList<String>> createNameMap(){
         // Reading in the data from the txt file
-        FileReader fr = new FileReader("config/data.txt");
+        FileReader fr = new FileReader("data2.txt");
         List<String> lines = new LinkedList<>();
         try {
             lines = fr.readLines();
@@ -26,46 +39,39 @@ public class MainTest {
 //            System.out.println(songMap.get(songName));
         }
 //        System.out.println(songMap.keySet());
+        return songMap;
+    }
 
-        Recommender recommender = new Recommender(songMap);
-
-        /*
-         * Randomly chooses 10 songs from the list
-         */
-        ArrayList<String> initial10Songs = recommender.initial10Songs();
-        ArrayList<String> initial10Artists = recommender.getArtists(initial10Songs);
-        System.out.println("Here is Your List of 10 Songs: " + initial10Songs);
-        System.out.println("Here is the List of the Corresponding Artists: " + initial10Artists);
-
-        /*
-         * The following code is for the interactive terminal.
-         * The program will prompt user to choose one of the randomly
-         * generated song names, and will only continue if the input
-         * matches one of the given songs.
-         */
+    /*
+     * The following code is for the interactive terminal.
+     * The program will prompt user to choose one of the randomly
+     * generated song names, and will only continue if the input
+     * matches one of the given songs.
+     */
+    public static void interactiveTerminal() {
         System.out.println();
-        System.out.println("Please Enter Your Preferred Song Choice in " +
-                "the Next Line in the Same Way it is Provided Above. Only the Song Name is Needed.");
+        System.out.println("Please Enter Two Songs You'd Like to Listen to in the " +
+                "the Next Two Lines in the Same Way it is Provided Above. Only the Song Name is Needed.");
 
         Scanner sc = new Scanner(System.in); // creates a scanner to read in inputs
-        String songInput = sc.nextLine();
+        String songInput1 = sc.nextLine();
+        String songInput2 = sc.nextLine();
 
         boolean invalidSong = true;
 
         do {
-            if (!initial10Songs.contains(songInput)) {
-                System.out.println("You Entered [ " + songInput +
-                        " ] Which Was Not One of the Listed Songs. Please Try Again.");
-                songInput = sc.nextLine();
+            if (!initial10Songs.contains(songInput1) || !initial10Songs.contains(songInput2)) {
+                System.out.println("You Entered a Song Which Was Not One of the Listed Songs. Please Try Again.");
+                songInput1 = sc.nextLine();
+                songInput2 = sc.nextLine();
             } else {
                 invalidSong = false;
-                System.out.println("You Entered [ " + songInput + " ]. Your Recommendation Will Be Provided Shortly. " );
+                System.out.println("You Entered [ " + songInput1 + " ] " + "and " + "[ " + songInput2 + " ]. Your Recommendation Will Be Provided Shortly. " );
             }
         } while (invalidSong);
 
-        /*
-         * The program will begin its recommendation system.
-         */
+        twoSongNames.add(songInput1);
+        twoSongNames.add(songInput2);
     }
 }
 
